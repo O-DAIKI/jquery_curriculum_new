@@ -87,18 +87,24 @@
       $(function() {
         $('.select').change(function() {
           var value = $(this).val();
-          $('.list li').each(function() {
-            var category = $(this).data('category-type');
-            if ( value == category ) {
-              $(this).show();
-            } else if ( value == 'all' ) {
-              $(this).show();
+          $('.list li').each(function(index, val) {
+            var category = $(val).data('category-type');
+            if (value === category) {
+              $(val).show();
             } else {
-              $(this).hide();
+              $(val).hide();
             }
           });
+          if (value === 'all') {$('.list li').show();}
         });
       });
+      // allの場合はeachの外で
+      // eachの引数に設定 thisいらなくなる 
+      // → 第一引数にはハッシュの場合はキー、配列の場合はインデックス、第二引数にはオブジェクトの値
+      // ===であるべき理由
+      // → ==を使うと数値を文字列に型変換して評価を行うため
+
+
       // 今回やるのはソート機能です。
       // selectボックスをクリックして言語を選び、その言語と関係のあるリストだけが表示されるプログラムです。
       // [処理の流れ]

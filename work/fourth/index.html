@@ -49,17 +49,17 @@
     <script>
       $(function(){
         $('.menu__list li').hover(function(){
-          $(this).children('ul').slideDown();
+          $(this).children('ul').stop().slideDown();
         }, function() {
-          $(this).children('ul').slideUp();
+          $(this).children('ul').stop().slideUp();
         });
 
         // $('.menu__list__title').hover(function (){
         //   console.log('w')
-        //   $(this).next().slideDown();
+        //   $(this).next().stop().slideDown();
         // }, function() {
-        //   $(this).next().slideUp();
-        // });
+        //   $(this).next().stop().slideUp();
+        // });B
       });
       // 今回やるのはドロップメニューです。
       // メニューをhoverすると隠れている中のメニューが表示され、メニューから離れると中のメニューが非表示されるプログラムです。
