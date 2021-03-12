@@ -69,7 +69,10 @@
                   + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
                   + '</div>' + '</div>'
               $('.lists').after(pager);
-
+              
+              $('.btn-item').on('click', function(e) {
+                e.preventDefault();
+              });
               function pageNext() {
                 currentPage = currentPage + 1
               }
