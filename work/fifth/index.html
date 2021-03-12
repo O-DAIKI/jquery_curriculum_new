@@ -86,16 +86,19 @@
     <script>
       $(function() {
         $('.select').change(function() {
-          var value = $(this).val();
-          $('.list li').each(function(index, val) {
-            var category = $(val).data('category-type');
-            if (value === category) {
-              $(val).show();
-            } else {
-              $(val).hide();
-            }
-          });
-          if (value === 'all') {$('.list li').show();}
+          var selectValue = $(this).val();
+          if (selectValue === 'all') {
+            $('.list li').show();
+          } else {
+            $('.list li').each(function(index, val) { // valは今処理している要素
+              var category = $(val).data('category-type');
+              if (value === category) {
+                $(val).show();
+              } else {
+                $(val).hide();
+              }
+            });
+          }
         });
       });
       // allの場合はeachの外で
