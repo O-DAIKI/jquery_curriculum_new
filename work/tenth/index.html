@@ -60,9 +60,6 @@
             messageEmpty();
             listsEmpty();
             pagerRemove();
-            if (data.hits === 0) {
-              $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
-            }
             $.each(data.Items, function(index, ItemObj){
               var ItemHtml = '<li class="lists__item">'
                 + '<div class="lists__item__inner">'
@@ -82,7 +79,11 @@
               + '<a class="btn-item" data-js="page-prev" href="">前へ' + '</a>'
               + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
               + '</div>' + '</div>'
-            $('.lists').after(pager);
+            if (data.hits >= 1 ) {
+              $('.lists').after(pager);
+            } else {
+              $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
+            }
             if (currentPage === 1) {
               $('[data-js="page-prev"]').addClass('disabled').css('pointer-events', 'none')
             } else if (currentPage === 100){
