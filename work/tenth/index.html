@@ -72,9 +72,10 @@
             $('.lists').append(ItemHtml);
             });
             var currentPage = data.page
+            var lastPage = data.pageCount
             var pager = '<div class="pager" data-js="pager">'
               + '<div class="counter">'
-              + '<span class="counter-current">' + currentPage + '</span>/<span class="counter-all">'+ data.pageCount + '</span>' + '</div>'
+              + '<span class="counter-current">' + currentPage + '</span>/<span class="counter-all">'+ lastPage + '</span>' + '</div>'
               + '<div class="btn-wrapper">'
               + '<a class="btn-item" data-js="page-prev" href="">前へ' + '</a>'
               + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
@@ -85,9 +86,10 @@
               $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
             }
             if (currentPage === 1) {
-              $('[data-js="page-prev"]').addClass('disabled').css('pointer-events', 'none')
-            } else if (currentPage === 100){
-              $('[data-js="page-next"]').addClass('disabled').css('pointer-events', 'none')
+              $('[data-js="page-prev"]').addClass('disabled').css('pointer-events', 'none');
+            }
+            if (currentPage === lastPage){
+              $('[data-js="page-next"]').addClass('disabled').css('pointer-events', 'none');
             }
           }).fail(function(jqXHR, textStatus, errorThrow) {
             messageEmpty();
