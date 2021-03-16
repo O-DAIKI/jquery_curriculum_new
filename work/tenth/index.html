@@ -34,15 +34,22 @@
         $('.search__btn').on('click', function() {
           pageNum = 1;
           searchWord = $('.search__text__input').val();
-          ajaxRequest(pageNum);
+          ajaxRequest();
         });
-        $(document).on('click', '.btn-item', function(e) {
+        $(document).on('click', '[data-js="page-prev"]', function(e) {
           e.preventDefault();
-          var moveBtn = $(this).data('js');
           if ($(this).hasClass('disabled')) {
             return false;
           }
-          pageMove(moveBtn);
+          pageNum--
+          ajaxRequest();
+        });
+        $(document).on('click', '[data-js="page-next"]', function(e) {
+          e.preventDefault();
+          if ($(this).hasClass('disabled')) {
+            return false;
+          }
+          pageNum++
           ajaxRequest();
         });
         function pageReset() {
@@ -50,7 +57,8 @@
           $('.lists').empty();
           $('.pager').remove();
         }
-        function ajaxRequest (PageNum) {
+        function ajaxRequest() {
+          pageReset();
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -63,31 +71,28 @@
               booksGenreId: '001'
             },
           }).done(function(data) {
-            console.log(searchWord);
-            pageReset();
-            setPager(data);
-            setItem(data);
+            if (data.hits === 0) {
+              $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
+            } else {
+              setItem(data);
+              setPager(data);
+            }
           }).fail(function(jqXHR, textStatus, errorThrow) {
-            pageReset();
             errorHandle(jqXHR);
           });
         }
         function setPager(data) {
           var currentPage = data.page
           var lastPage = data.pageCount
-          if (data.hits === 0) {
-            $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
-          } else {
-            $('.lists').after(
-              '<div class="pager" data-js="pager">'
-            + '<div class="counter">'
-            + '<span class="counter-current">' + currentPage + '</span>/<span class="counter-all">'+ lastPage + '</span>' + '</div>'
-            + '<div class="btn-wrapper">'
-            + '<a class="btn-item" data-js="page-prev" href="">前へ' + '</a>'
-            + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
-            + '</div>' + '</div>'
-            );
-          }
+          $('.lists').after(
+            '<div class="pager" data-js="pager">'
+          + '<div class="counter">'
+          + '<span class="counter-current">' + currentPage + '</span>/<span class="counter-all">'+ lastPage + '</span>' + '</div>'
+          + '<div class="btn-wrapper">'
+          + '<a class="btn-item" data-js="page-prev" href="">前へ' + '</a>'
+          + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
+          + '</div>' + '</div>'
+          );
           if (currentPage === 1) {
             $('[data-js="page-prev"]').addClass('disabled');
           }
@@ -108,13 +113,6 @@
                 + '</a>' + '</div>' + '</li>'
             });
             $('.lists').append(ItemHtml);
-        }
-        function pageMove(moveBtn){
-          if (moveBtn === 'page-prev') {
-              pageNum--
-          } else if (moveBtn === 'page-next') {
-              pageNum++
-          }
         }
         function errorHandle(jqXHR) {
           var httpStatus = jqXHR.status
