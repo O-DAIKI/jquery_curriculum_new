@@ -30,11 +30,11 @@
     <script>
       $(function() {
         var pageNum = 1;
-        var searchWord = ''
+        var searchWord = "";
         $('.search__btn').on('click', function() {
           pageNum = 1;
-          setSearchWord();
-          ajaxRequest(searchWord, pageNum);
+          searchWord = $('.search__text__input').val();
+          ajaxRequest(pageNum);
         });
         $(document).on('click', '.btn-item', function(e) {
           e.preventDefault();
@@ -42,19 +42,15 @@
           if ($(this).hasClass('disabled')) {
             return false;
           }
-          setSearchWord();
           pageMove(moveBtn);
-          ajaxRequest(searchWord);
+          ajaxRequest();
         });
         function pageReset() {
           $('.message').empty();
           $('.lists').empty();
           $('.pager').remove();
         }
-        function setSearchWord(){
-          searchWord = $('.search__text__input').val();
-        }
-        function ajaxRequest (searchWord, PageNum) {
+        function ajaxRequest (PageNum) {
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -67,6 +63,7 @@
               booksGenreId: '001'
             },
           }).done(function(data) {
+            console.log(searchWord);
             pageReset();
             setPager(data);
             setItem(data);
@@ -78,17 +75,18 @@
         function setPager(data) {
           var currentPage = data.page
           var lastPage = data.pageCount
-          var pager = '<div class="pager" data-js="pager">'
+          if (data.hits === 0) {
+            $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
+          } else {
+            $('.lists').after(
+              '<div class="pager" data-js="pager">'
             + '<div class="counter">'
             + '<span class="counter-current">' + currentPage + '</span>/<span class="counter-all">'+ lastPage + '</span>' + '</div>'
             + '<div class="btn-wrapper">'
             + '<a class="btn-item" data-js="page-prev" href="">前へ' + '</a>'
             + '<a class="btn-item" data-js="page-next" href="">次へ' + '</a>'
             + '</div>' + '</div>'
-          if (data.hits === 0) {
-            $('.message').append('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
-          } else {
-            $('.lists').after(pager);
+            );
           }
           if (currentPage === 1) {
             $('[data-js="page-prev"]').addClass('disabled');
@@ -120,19 +118,24 @@
         }
         function errorHandle(jqXHR) {
           var httpStatus = jqXHR.status
+          var errorMessage = ''
           switch (httpStatus) {
               case 0:
-                $('.message').append('<p class="message">通信に失敗しました。インターネットの接続をご確認ください。</p>');
+                errorMessage = "通信に失敗しました。インターネットの接続をご確認ください。";
                 break;
 
               case 400:
-                $('.message').append('<p class="message">検索文字が入力されていません。</p>');
+                errorMessage = "検索文字が入力されていません。";
                 break;
 
               case 429:
-                $('.message').append('<p class="message">リクエスト過多です。しばらく時間を置いてからお試しください。</p>');
+                errorMessage = "リクエスト過多です。しばらく時間を置いてからお試しください。";
                 break;
+
+              default:
+                errorMessage = "予期せぬエラーが発生しました。<br>管理人にご報告ください。";
             }
+            $('.message').append('<p class="message">' + errorMessage + '</p>');
         }
       });
     </script>
